@@ -1,0 +1,26 @@
+version: "3"
+services:
+  prom:
+    image: prom/prometheus
+    volumes:
+     - ./conf/prometheus.yml:/etc/prometheus/prometheus.yml
+    command: "--config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/prometheus"
+    ports:
+     - 9090:9090
+    depends_on:
+     - pyserver
+  pyserver:
+    build: ./pyserver
+    ports:
+     - "8000:8000"
+     - "8001:8001"
+    volumes:
+     - ./pyserver/server.py:/etc/prometheus/server.py
+    command: "python /etc/prometheus/server.py"
+#    network_mode: host
+  # grafana:
+  #   image: grafana/grafana
+  #   ports:
+  #    - "3000:3000"
+  #   depends_on:
+  #     - prom
